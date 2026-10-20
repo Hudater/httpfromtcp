@@ -29,16 +29,18 @@ func main() {
 
 		// End of file means print whatever is there and exit, we done
 		if err == io.EOF {
-			fmt.Printf("read: %s\n", currLine)
+			if len(currLine) > 0 {
+				fmt.Printf("read: %s\n", currLine)
+			}
 			break
 		}
 		// handle the err, we are not savages
 		if err != nil {
 			log.Fatalf("Error reading buffer: %v", err)
 		}
-		
+
 		// fmt.Printf("OG: '%s' of type: '%T'\n", string(buffer[:bytesRead]), buffer)
-		// 
+		//
 		splitBuffer = strings.Split(string(buffer[:bytesRead]), "\n")
 		// fmt.Printf("%q\n", splitBuffer)
 		for i, part := range splitBuffer {
@@ -48,7 +50,7 @@ func main() {
 				fmt.Printf("read: %s\n", currLine)
 				currLine = ""
 				currLine += part
-			} 
+			}
 		}
 	}
 }
