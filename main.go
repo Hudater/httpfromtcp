@@ -41,13 +41,14 @@ func main() {
 		// 
 		splitBuffer = strings.Split(string(buffer[:bytesRead]), "\n")
 		// fmt.Printf("%q\n", splitBuffer)
-		if len(splitBuffer) == 1 {
-			currLine += splitBuffer[0]
-		} else if  len(splitBuffer) > 1 {
-			currLine += splitBuffer[0]
-			fmt.Printf("read: %s\n", currLine)
-			currLine = ""
-			currLine += splitBuffer[1]
+		for i, part := range splitBuffer {
+			if i == 0 {
+				currLine += part
+			} else {
+				fmt.Printf("read: %s\n", currLine)
+				currLine = ""
+				currLine += part
+			} 
 		}
 	}
 }
