@@ -5,23 +5,49 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
+	// open file and defer close
 	file, err := os.Open("messages.txt")
 	if err != nil {
 		log.Fatalf("could not open file with error: %v", err)
 	}
 	defer file.Close()
+
+	// 8 bytes at a time buffer
 	buffer := make([]byte, 8)
+
+	// each line is one unit now
+	currLine := ""
+	splitBuffer := []string{}
+
 	for {
+		// read the open file
 		bytesRead, err := file.Read(buffer)
+
+		// End of file means print whatever is there and exit, we done
 		if err == io.EOF {
+			fmt.Printf("read: %s\n", currLine)
 			break
 		}
+		// handle the err, we are not savages
 		if err != nil {
 			log.Fatalf("Error reading buffer: %v", err)
 		}
-		fmt.Printf("read: %v\n", string(buffer[:bytesRead]))
+		
+		// fmt.Printf("OG: '%s' of type: '%T'\n", string(buffer[:bytesRead]), buffer)
+		// 
+		splitBuffer = strings.Split(string(buffer[:bytesRead]), "\n")
+		// fmt.Printf("%q\n", splitBuffer)
+		if len(splitBuffer) == 1 {
+			currLine += splitBuffer[0]
+		} else if  len(splitBuffer) > 1 {
+			currLine += splitBuffer[0]
+			fmt.Printf("read: %s\n", currLine)
+			currLine = ""
+			currLine += splitBuffer[1]
+		}
 	}
 }
