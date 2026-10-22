@@ -4,21 +4,36 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
+	"net"
 	"strings"
 )
 
 func main() {
 	// open file, close is done by `getLinesChannel()`
-	file, err := os.Open("messages.txt")
-	if err != nil {
-		log.Fatalf("could not open file with error: %v", err)
-	}
+	// file, err := os.Open("messages.txt")
 
-	lineChannel := getLinesChannel(file)
-	// channels don't return index
-	for currLine := range lineChannel {
-		fmt.Printf("read: %s\n", currLine)
+	// Now we using a conn over tcp instead of static file
+	listener, err := net.Listen("tcp", ":42069")
+	if err != nil {
+		fmt.Printf("could not listen to connection: %v", err)
+	}
+	defer listener.Close()
+
+	// wait for conn accept
+	for {
+		conn, err := listener.Accept()
+		// lineChannel := getLinesChannel(conn)
+		if err != nil {
+			fmt.Printf("failed to accept connection: %v", err)
+		}
+		fmt.Println("connection has been accepted")
+		// goroutine to handle the client concurrently
+		lineChannel := getLinesChannel(conn)
+		// channels don't return index
+		for currLine := range lineChannel {
+			fmt.Printf("%s\n", currLine)
+		}
+		fmt.Println("connection has been closed")
 	}
 }
 
