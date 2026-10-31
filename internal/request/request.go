@@ -6,8 +6,8 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"log"
 
-	"github.com/DataDog/datadog-agent/pkg/trace/log"
 )
 
 type Request struct {
@@ -29,7 +29,7 @@ func RequestFromReader(reader io.Reader) (*Request, error) {
 
 	parsedRequestLine, err := parseRequestLine(requestString)
 	if err != nil {
-		log.Errorf("could not parse request")
+		log.Printf("could not parse request")
 		return nil, errors.New("could not parse request")
 	}
 	parsedRequest := Request{
@@ -42,27 +42,27 @@ func parseRequestLine(rs []byte) (RequestLine, error) {
 	splitLines := strings.Split(string(rs), "\r\n")
 	requestLine := strings.Split(splitLines[0], " ")
 	if len(requestLine) != 3 {
-		log.Errorf("request line invalid, must contain exactly 3 items")
+		log.Printf("request line invalid, must contain exactly 3 items")
 		return RequestLine{}, errors.New("invalid request line")
 	}
 	if !isOnlyUppercaseAlpha(requestLine[0]) {
-		log.Errorf("invalid request method, must only have uppercase alphabets")
+		log.Printf("invalid request method, must only have uppercase alphabets")
 		return RequestLine{}, errors.New("invalid method")
 	}
 
 	requestScheme, httpVer, found := strings.Cut(requestLine[2], "/")
 	if !found {
-		log.Errorf("request line could not be parsed")
+		log.Printf("request line could not be parsed")
 		return RequestLine{}, errors.New("request line could not be parsed")
 	}
 
 	if httpVer != "1.1" {
-		log.Errorf("invalid http version, must be HTTP/1.1")
+		log.Printf("invalid http version, must be HTTP/1.1")
 		return RequestLine{}, errors.New("invalid http version")
 	}
 
 	if requestScheme != "HTTP" {
-		log.Errorf("invalid scheme, must be HTTP")
+		log.Printf("invalid scheme, must be HTTP")
 		return RequestLine{}, errors.New("invalid scheme")
 	}
 
