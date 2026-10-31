@@ -4,10 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"regexp"
 	"strings"
-	"log"
-
 )
 
 type Request struct {
@@ -67,11 +66,11 @@ func parseRequestLine(rs []byte) (RequestLine, error) {
 	}
 
 	// finally creating the struct to return
-	
+
 	reqLine := RequestLine{
-  	HttpVersion   : httpVer,
-    RequestTarget : requestLine[1],
-    Method        : requestLine[0],
+		HttpVersion:   httpVer,
+		RequestTarget: requestLine[1],
+		Method:        requestLine[0],
 	}
 	return reqLine, nil
 }
